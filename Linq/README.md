@@ -1,0 +1,1 @@
+[Wiki](https://github.com/junhun0106/CSharp/wiki/%5BBenchmark%5D-Linq)
