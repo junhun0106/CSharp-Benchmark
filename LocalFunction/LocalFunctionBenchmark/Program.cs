@@ -89,7 +89,7 @@ namespace LocalFunctionBenchmark
     }
 
     [MemoryDiagnoser]
-    public class DeletgateBenchmark
+    public class DelegateParameterBenchmark
     {
         private struct A
         {
@@ -179,6 +179,38 @@ namespace LocalFunctionBenchmark
         //static string g_select(A x) => x.@string;
     }
 
+    [MemoryDiagnoser]
+    public class DelegateIsBenchmark
+    {
+        private Delegate actionDelegate;
+        private Delegate funcDelegate;
+
+        [GlobalSetup]
+        public void GlobalSetUp()
+        {
+            actionDelegate = (Action)(() => { });
+            funcDelegate = (Func<bool>)(() => true);
+        }
+
+        [Benchmark]
+        public void IsAction()
+        {
+            if(actionDelegate is Action action)
+            {
+                action();
+            }
+        }
+
+        [Benchmark]
+        public void IsFunc()
+        {
+            if (funcDelegate is Func<bool> func)
+            {
+                _ = func();
+            }
+        }
+    }
+
     internal static class Program
     {
         private static void Main(string[] args)
@@ -193,7 +225,7 @@ namespace LocalFunctionBenchmark
                 .AddJob(Job.Default.WithRuntime(CoreRuntime.Core50))
                 .AddExporter(DefaultExporters.Markdown);
 
-            BenchmarkRunner.Run<MSDNBenchmark>(customConfig);
+            BenchmarkRunner.Run<DelegateIsBenchmark>(customConfig);
         }
     }
 }

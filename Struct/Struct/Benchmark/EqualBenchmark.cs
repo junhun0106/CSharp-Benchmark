@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Struct.Benchmark
 {
@@ -14,20 +15,14 @@ namespace Struct.Benchmark
         public void NotImpl()
         {
             var comparer_notImpl = new TestStruct_NotImpl(1, EType.B, new DateTime(2021, 11, 30), "1");
-            if(_comparer_notImpl.Equals(comparer_notImpl))
-            {
-                //
-            }
+            _ = comparer_notImpl.HasValue();
         }
 
         [Benchmark]
         public void EquatableImpl()
         {
             var comparer = new TestStruct(1, EType.B, new DateTime(2021, 11, 30), "1");
-            if (_comparer.Equals(comparer))
-            {
-                //
-            }
+            _ = comparer.HasValue();
         }
 
         public void Validate()
@@ -65,26 +60,37 @@ namespace Struct.Benchmark
                 throw new Exception(exception);
             }
 
-            //무조건 실패
-            //if (!default_notImpl.IsNull())
-            //{
-            //    throw new Exception(exception);
-            //}
+            if (!default_notImpl.IsNull_2())
+            {
+                throw new Exception(exception);
+            }
         }
     }
 
     public static class TestStructExtensions
     {
-        public static bool HasValue<T>(this T self) where T : struct, ITestStruct
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool HasValue(this TestStruct self) 
         {
-            var e = self.Equals(default);
-            return e == false;
+            return !self.IsNull();
         }
 
-        public static bool IsNull<T>(this T self) where T : struct, ITestStruct
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNull(this TestStruct self)
         {
-            var e = self.HasValue();
-            return e == false;
+            return self.Equals(default(TestStruct));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool HasValue(this TestStruct_NotImpl self)
+        {
+            return !self.IsNull_2();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNull_2(this TestStruct_NotImpl self)
+        {
+            return self.Equals(default(TestStruct_NotImpl));
         }
     }
 }
