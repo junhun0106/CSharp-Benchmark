@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace LinqBenchmark
 {
-    public static class EnumerableExtensions
+    public static partial class EnumerableExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TResult> WhereSelect<TSource, TResult>(this IEnumerable<TSource> source,

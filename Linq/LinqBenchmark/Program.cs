@@ -14,6 +14,8 @@ namespace LinqBenchmark
     {
         private static void Main(string[] args)
         {
+            (new WhereSelectBenchmark()).Validate();
+
             BenchmarkSwitcher.FromAssembly(typeof(WhereSelectBenchmark).Assembly).Run(args);
 
             //var customConfig = ManualConfig
