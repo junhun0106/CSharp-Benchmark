@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Tester
 {
@@ -234,6 +235,35 @@ namespace Tester
         {
             //BenchmarkSwitcher.FromAssembly(typeof(SelectToListBenchmark).Assembly).Run(args);
 
+            Console.WriteLine("press any key...");
+            Console.ReadLine();
+            Console.WriteLine("start...");
+
+            var benchmark = new DictionaryValuesBenchmark();
+            benchmark.GlobalSetUp();
+            const int testCount = 100000;
+            for (int i = 0; i < testCount; ++i)
+            {
+                benchmark.ValueWhere();
+            }
+            for (int i = 0; i < testCount; ++i)
+            {
+                benchmark.Value2Where();
+            }
+            for (int i = 0; i < testCount; ++i)
+            {
+                benchmark.ForeachWhere();
+            }
+
+            Console.WriteLine("finish...");
+            while (true)
+            {
+                Console.ReadLine();
+                break;
+            }
+
+            return;
+
             var customConfig = ManualConfig
               .Create(DefaultConfig.Instance)
               .AddValidator(JitOptimizationsValidator.FailOnError)
@@ -244,7 +274,7 @@ namespace Tester
               .AddJob(Job.Default.WithRuntime(CoreRuntime.Core50))
               .AddExporter(DefaultExporters.Markdown);
 
-            BenchmarkRunner.Run<CloneBenchmark>(customConfig);
+            BenchmarkRunner.Run<DictionaryValuesBenchmark>(customConfig);
         }
     }
 }

@@ -158,22 +158,33 @@ namespace Tester.Benchmark
 
         readonly Dictionary<string, Data> _dictionary = new();
 
+        private Dictionary<string, Data>.ValueCollection _values => _dictionary.Values;
+
+        private IEnumerable<Data> _values2 => _dictionary.Values;
+
         [GlobalSetup]
         public void GlobalSetUp()
         {
-            for (int i = 0; i < 100; ++i)
+            for (int i = 0; i < 1000; ++i)
             {
-                var @string = i.ToString();
-                _dictionary.Add(@string, new Data(@string));
+                var @string = (i % 10).ToString();
+                _dictionary.Add(i.ToString(), new Data(@string));
             }
         }
 
         [Benchmark]
         public void Values()
         {
-            foreach (var value in _dictionary.Values)
+            foreach (var value in _values)
             {
+            }
+        }
 
+        [Benchmark]
+        public void Values2()
+        {
+            foreach (var value in _values2)
+            {
             }
         }
 
@@ -181,6 +192,33 @@ namespace Tester.Benchmark
         public void Foreach()
         {
             foreach (var kv in _dictionary)
+            {
+            }
+        }
+
+        [Benchmark]
+        public void ValueWhere()
+        {
+            var c = _values.Where(x => x.id == "0");
+            foreach (var _ in c)
+            {
+            }
+        }
+
+        [Benchmark]
+        public void Value2Where()
+        {
+            var c = _values2.Where(x => x.id == "0");
+            foreach (var _ in c)
+            {
+            }
+        }
+
+        [Benchmark]
+        public void ForeachWhere()
+        {
+            var c = _dictionary.Where(x => x.Value.id == "0");
+            foreach (var _ in c)
             {
             }
         }
