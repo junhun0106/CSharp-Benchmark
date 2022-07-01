@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Columns;
@@ -211,10 +212,140 @@ namespace LocalFunctionBenchmark
         }
     }
 
+    [MemoryDiagnoser]
+    public class LocalFuncVsDelegae
+    {
+        [Benchmark]
+        public void LocalFunc_1()
+        {
+            int sum = 0;
+            void test()
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    sum += i;
+                }
+            }
+
+            test();
+
+            sum += sum;
+        }
+
+        [Benchmark]
+        public void LocalFunc_2()
+        {
+            int sum = 0;
+            static int test(ref int s)
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    s += i;
+                }
+
+                return s;
+            }
+
+            test(ref sum);
+
+            sum += sum;
+        }
+
+        [Benchmark]
+        public void Action()
+        {
+            int sum = 0;
+            Action action = () =>
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    sum += i;
+                }
+            };
+
+            action();
+
+            sum += sum;
+        }
+    }
+
+    [MemoryDiagnoser]
+    public class InterpolatedStringHandlerTest
+    {
+        public static class Log
+        {
+            public static void Debug(string message)
+            {
+
+            }
+        }
+
+        public static class Log_2
+        {
+            [InterpolatedStringHandler]
+            public ref struct DebugLoggerStringHandler
+            {
+                private DefaultInterpolatedStringHandler builder;
+                public DebugLoggerStringHandler(int literalLength, int formattedCount)
+                {
+                    this.builder = new(literalLength, formattedCount);
+                }
+
+                public void AppendLiteral(string value)
+                    => this.builder.AppendLiteral(value);
+                public void AppendFormatted<T>(T t, int alignment = 0, string format = null)
+                    => this.builder.AppendFormatted(t, alignment, format);
+                public void AppendFormatted(DateTime datetime)
+                    => this.builder.AppendFormatted(datetime, format: "u");
+                public void AppendFormatted(bool boolean)
+                    => this.builder.AppendLiteral(boolean ? "TRUE" : "FALSE");
+                public string ToStringAndClear()
+                    => this.builder.ToStringAndClear();
+            }
+
+            public static void Debug(string message)
+            {
+
+            }
+
+            public static void Debug(ref DebugLoggerStringHandler handler)
+            {
+                _ = handler.ToStringAndClear();
+            }
+        }
+
+        const string 보간 = "보간";
+
+        [Benchmark]
+        public void 단순문자열()
+        {
+            Log.Debug("단순문자열");
+        }
+
+        [Benchmark]
+        public void 보간문자열()
+        {
+            Log.Debug($"{보간}문자열");
+        }
+
+        [Benchmark]
+        public void 단순문자열WithInterpolatedStringHandler()
+        {
+            Log_2.Debug("단순문자열");
+        }
+
+        [Benchmark]
+        public void 보간문자열WithInterpolatedStringHandler()
+        {
+            Log_2.Debug($"{보간}문자열");
+        }
+    }
+
     internal static class Program
     {
         private static void Main(string[] args)
         {
+
             //BenchmarkSwitcher.FromAssembly(typeof(DeletgateBenchmark).Assembly).Run(args);
 
             var customConfig = ManualConfig
@@ -222,10 +353,10 @@ namespace LocalFunctionBenchmark
                 .AddValidator(JitOptimizationsValidator.FailOnError)
                 .AddDiagnoser(MemoryDiagnoser.Default)
                 .AddColumn(StatisticColumn.AllStatistics)
-                .AddJob(Job.Default.WithRuntime(CoreRuntime.Core50))
+                .AddJob(Job.Default.WithRuntime(CoreRuntime.Core60))
                 .AddExporter(DefaultExporters.Markdown);
 
-            BenchmarkRunner.Run<DelegateIsBenchmark>(customConfig);
+            BenchmarkRunner.Run<InterpolatedStringHandlerTest>(customConfig);
         }
     }
 }
