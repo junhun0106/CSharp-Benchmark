@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 
-namespace Tester.Benchmark
+namespace Benchmarks.Benchmark
 {
     [MemoryDiagnoser]
     public class ListFindBenchmark

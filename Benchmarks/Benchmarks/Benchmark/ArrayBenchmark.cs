@@ -2,7 +2,7 @@
 using System.Linq;
 using BenchmarkDotNet.Attributes;
 
-namespace Tester.ArrayBenchmark
+namespace Benchmarks.Benchmark
 {
     public class ArrayFindBenchmark : ArrayBenchmarkBase
     {

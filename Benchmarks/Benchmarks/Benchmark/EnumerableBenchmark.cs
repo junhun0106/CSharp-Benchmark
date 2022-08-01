@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using BenchmarkDotNet.Attributes;
 
-namespace Tester.Benchmark
+namespace Benchmarks.Benchmark
 {
     [MemoryDiagnoser]
     public class EnumerableFirstOrDefault

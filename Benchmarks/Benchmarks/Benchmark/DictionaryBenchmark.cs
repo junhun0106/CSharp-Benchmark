@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 
-namespace Tester.Benchmark
+namespace Benchmarks.Benchmark
 {
     [MemoryDiagnoser]
     public class DictionryLookUp
@@ -128,19 +125,6 @@ namespace Tester.Benchmark
         public void Foreach()
         {
             var _ = _list.GetFirstOrDefault();
-        }
-    }
-
-    public static class DicionaryExtensions
-    {
-        public static KeyValuePair<TKey, TValue> GetFirstOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> source)
-        {
-            foreach (var kv in source)
-            {
-                return kv;
-            }
-
-            return default(KeyValuePair<TKey, TValue>);
         }
     }
 
