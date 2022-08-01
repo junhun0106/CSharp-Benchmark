@@ -1,4 +1,6 @@
-﻿namespace Benchmarks;
+﻿using System.Runtime.CompilerServices;
+
+namespace Benchmarks;
 
 public static class ArrayExntensions
     {
@@ -127,3 +129,30 @@ public static class EnumExtensions
             return false;
         }
     }
+
+public static class StructExtensions
+{
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool HasValue(this TestStruct self)
+    {
+        return !self.IsNull();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNull(this TestStruct self)
+    {
+        return self.Equals(default(TestStruct));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool HasValue(this TestStruct_NotImpl self)
+    {
+        return !self.IsNull_2();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNull_2(this TestStruct_NotImpl self)
+    {
+        return self.Equals(default(TestStruct_NotImpl));
+    }
+}

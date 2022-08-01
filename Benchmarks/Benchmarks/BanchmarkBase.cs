@@ -3,26 +3,6 @@ using BenchmarkDotNet.Jobs;
 
 namespace Benchmarks
 {
-    public class Input
-    {
-        public string Value;
-
-        public Input(string value)
-        {
-            Value = value;
-        }
-    }
-
-    public class Output
-    {
-        public string Value;
-
-        public Output(string value)
-        {
-            Value = value;
-        }
-    }
-
     [SimpleJob(RuntimeMoniker.Net50)]
     [SimpleJob(RuntimeMoniker.Net60)]
     [MemoryDiagnoser]
