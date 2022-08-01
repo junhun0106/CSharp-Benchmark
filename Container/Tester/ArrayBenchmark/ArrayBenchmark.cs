@@ -1,29 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
 
-namespace Tester.Benchmark
+namespace Tester.ArrayBenchmark
 {
-    [MemoryDiagnoser]
-    public class ArrayFindBenchmark
+    public class ArrayFindBenchmark : ArrayBenchmarkBase
     {
-        private readonly Input[] _list = new Input[] {
-            new Input("a"),
-            new Input("a"),
-            new Input("a"),
-            new Input("a"),
-            new Input("a"),
-            new Input("a"),
-            new Input("b"),
-            new Input("b"),
-            new Input("b"),
-            new Input("b"),
-            new Input("b"),
-            new Input("b"),
-            new Input("b"),
-        };
-
         [Benchmark]
         public void ArrayFind()
         {
@@ -38,24 +20,8 @@ namespace Tester.Benchmark
     }
 
     [MemoryDiagnoser]
-    public class ArrayFindAllBenchmark
+    public class ArrayFindAllBenchmark : ArrayBenchmarkBase
     {
-        private readonly Input[] _list = new Input[] {
-            new Input("a"),
-            new Input("a"),
-            new Input("a"),
-            new Input("a"),
-            new Input("a"),
-            new Input("a"),
-            new Input("b"),
-            new Input("b"),
-            new Input("b"),
-            new Input("b"),
-            new Input("b"),
-            new Input("b"),
-            new Input("b"),
-        };
-
         [Benchmark]
         public void ArrayFindAll()
         {
@@ -70,10 +36,8 @@ namespace Tester.Benchmark
     }
 
     [MemoryDiagnoser]
-    public class XArrayContainsBenchmark
+    public class XArrayContainsBenchmark : ArrayBenchmarkBase
     {
-        private Input[] _list;
-
         private Input _input;
 
         [GlobalSetup]
@@ -165,68 +129,5 @@ namespace Tester.Benchmark
         //        throw new Exception();
         //    }
         //}
-    }
-
-    public static class ArrayExntensions
-    {
-        public static T Find<T>(this T[] array, Predicate<T> pred)
-        {
-            return Array.Find(array, pred);
-        }
-
-        public static T[] FindAll<T>(this T[] array, Predicate<T> match)
-        {
-            return Array.FindAll(array, match);
-        }
-
-        public static int BinarySearch<T>(this T[] array, T value)
-        {
-            return Array.BinarySearch(array, value);
-        }
-
-        public static bool Exists<T>(this T[] array, T value)
-        {
-            foreach (var item in array)
-            {
-                if (item.Equals(value))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool Exists_2<T>(this T[] array, T value, IEqualityComparer<T> comparer = null)
-        {
-            if (comparer == null)
-            {
-                for (int i = 0; i < array.Length; ++i)
-                {
-                    var item = array[i];
-                    if (item.Equals(value))
-                    {
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < array.Length; ++i)
-                {
-                    var item = array[i];
-                    if (comparer.Equals(item, value))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public static bool Exists_3<T>(this T[] array, T value)
-        {
-            return Array.BinarySearch(array, value) > 0;
-        }
     }
 }

@@ -1,21 +1,19 @@
 ﻿using System;
-
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Validators;
-using BenchmarkDotNet.Diagnosers;
-using BenchmarkDotNet.Columns;
-using BenchmarkDotNet.Jobs;
-using BenchmarkDotNet.Environments;
-using BenchmarkDotNet.Exporters;
-
-using Tester.Benchmark;
 using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
+
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Exporters;
+using BenchmarkDotNet.Loggers;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Reports;
+
+using Tester.Benchmark;
 
 namespace Tester
 {
@@ -233,8 +231,33 @@ namespace Tester
     {
         private static void Main(string[] args)
         {
-            //BenchmarkSwitcher.FromAssembly(typeof(SelectToListBenchmark).Assembly).Run(args);
+            Console.WriteLine("1. select bechmark");
+            Console.WriteLine("2. write all bechmark");
+            Console.WriteLine("'e' or 'E' exit");
+            while (true)
+            {
+                var line = Console.ReadLine();
+                if (line.Equals("e", StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
 
+                if (int.TryParse(line, out var num))
+                {
+                    if (num == 1)
+                    {
+                        Selecter();
+                    }
+                    else if (num == 2)
+                    {
+                        Writer(args);
+                    }
+                }
+            }
+        }
+
+        static void Selecter()
+        {
             Console.WriteLine("press any key...");
             Console.ReadLine();
             Console.WriteLine("start...");
@@ -246,10 +269,12 @@ namespace Tester
             {
                 benchmark.ValueWhere();
             }
+
             for (int i = 0; i < testCount; ++i)
             {
                 benchmark.Value2Where();
             }
+
             for (int i = 0; i < testCount; ++i)
             {
                 benchmark.ForeachWhere();
@@ -261,20 +286,85 @@ namespace Tester
                 Console.ReadLine();
                 break;
             }
+        }
 
-            return;
+        static void Writer(string[] args)
+        {
+            foreach (var summary in BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args))
+            {
+                WriteSummary(summary);
+                break;
+            }
+        }
 
-            var customConfig = ManualConfig
-              .Create(DefaultConfig.Instance)
-              .AddValidator(JitOptimizationsValidator.FailOnError)
-              .AddDiagnoser(MemoryDiagnoser.Default)
-              .AddColumn(StatisticColumn.AllStatistics)
-              //.AddJob(Job.Default.WithRuntime(ClrRuntime.Net48))
-              //.AddJob(Job.Default.WithRuntime(CoreRuntime.Core31))
-              .AddJob(Job.Default.WithRuntime(CoreRuntime.Core50))
-              .AddExporter(DefaultExporters.Markdown);
+        static void WriteSummary(Summary summary)
+        {
+            var solutionDir = GetSolutionDirectory();
+            if (solutionDir is null)
+            {
+                return;
+            }
 
-            BenchmarkRunner.Run<DictionaryValuesBenchmark>(customConfig);
+            var targetType = GetTargetType(summary);
+            if (targetType is null)
+            {
+                return;
+            }
+
+            var title = targetType.Name;
+            var pointIndex = targetType.Namespace.IndexOf('.');
+            if (pointIndex >= 0)
+                title = $"{EndSubstring(targetType.Namespace, pointIndex + 1)}.{targetType.Name}";
+
+            var resultsPath = Path.Combine(solutionDir, "Results");
+            _ = Directory.CreateDirectory(resultsPath);
+
+            var filePath = Path.Combine(resultsPath, $"{title}.md");
+
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+
+            using var fileWriter = new StreamWriter(filePath, false, Encoding.UTF8);
+            var logger = new StreamLogger(fileWriter);
+
+            logger.WriteLine($"## {title}");
+            logger.WriteLine();
+
+            logger.WriteLine("### Source");
+            var sourceLink = new StringBuilder("../LinqBenchmarks");
+            foreach (var folder in targetType.Namespace.Split('.').AsEnumerable().Skip(1))
+                _ = sourceLink.Append($"/{folder}");
+            _ = sourceLink.Append($"/{targetType.Name}.cs");
+            logger.WriteLine($"[{targetType.Name}.cs]({sourceLink})");
+            logger.WriteLine();
+
+            logger.WriteLine("### Results:");
+
+            MarkdownExporter.GitHub.ExportToLog(summary, logger);
+        }
+
+        static string EndSubstring(string str, int index)
+            => str.Substring(index, str.Length - index);
+
+        static Type GetTargetType(Summary summary)
+        {
+            var targetTypes = summary.BenchmarksCases.Select(i => i.Descriptor.Type).Distinct().ToList();
+            return targetTypes.Count == 1 ? targetTypes[0] : null;
+        }
+
+        static string GetSolutionDirectory()
+        {
+            var dir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+
+            while (!string.IsNullOrEmpty(dir))
+            {
+                if (Directory.EnumerateFiles(dir, "*.sln", SearchOption.TopDirectoryOnly).Any())
+                    return dir;
+
+                dir = Path.GetDirectoryName(dir);
+            }
+
+            return null;
         }
     }
 }

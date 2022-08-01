@@ -272,72 +272,259 @@ namespace LocalFunctionBenchmark
     [MemoryDiagnoser]
     public class InterpolatedStringHandlerTest
     {
+        //public static class Log
+        //{
+        //    public static void Debug(string message)
+        //    {
+
+        //    }
+        //}
+
+        //public static class Log_2
+        //{
+        //    //[InterpolatedStringHandler]
+        //    public ref struct DebugLoggerStringHandler
+        //    {
+        //        private DefaultInterpolatedStringHandler builder;
+        //        public DebugLoggerStringHandler(int literalLength, int formattedCount)
+        //        {
+        //            this.builder = new(literalLength, formattedCount);
+        //        }
+
+        //        public void AppendLiteral(string value)
+        //            => this.builder.AppendLiteral(value);
+        //        public void AppendFormatted<T>(T t, int alignment = 0, string format = null)
+        //            => this.builder.AppendFormatted(t, alignment, format);
+        //        public void AppendFormatted(DateTime datetime)
+        //            => this.builder.AppendFormatted(datetime, format: "u");
+        //        public void AppendFormatted(bool boolean)
+        //            => this.builder.AppendLiteral(boolean ? "TRUE" : "FALSE");
+        //        public string ToStringAndClear()
+        //            => this.builder.ToStringAndClear();
+        //    }
+
+        //    public static void Debug(string message)
+        //    {
+
+        //    }
+
+        //    public static void Debug(ref DebugLoggerStringHandler handler)
+        //    {
+        //        _ = handler.ToStringAndClear();
+        //    }
+        //}
+
+        //const string 보간 = "보간";
+
+        //[Benchmark]
+        //public void 단순문자열()
+        //{
+        //    Log.Debug("단순문자열");
+        //}
+
+        //[Benchmark]
+        //public void 보간문자열()
+        //{
+        //    Log.Debug($"{보간}문자열");
+        //}
+
+        //[Benchmark]
+        //public void 단순문자열WithInterpolatedStringHandler()
+        //{
+        //    Log_2.Debug("단순문자열");
+        //}
+
+        //[Benchmark]
+        //public void 보간문자열WithInterpolatedStringHandler()
+        //{
+        //    Log_2.Debug($"{보간}문자열");
+        //}
+    }
+
+    [MemoryDiagnoser]
+    public class StringInternTest
+    {
         public static class Log
         {
-            public static void Debug(string message)
+            public static string Debug(string message, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int lineNumber = -1)
             {
+                var mn = memberName;
+                var sf = sourceFilePath;
 
+                return String.Empty;
+            }
+
+            public static string Debug_2(string message)
+            {
+                return String.Empty;
             }
         }
 
-        public static class Log_2
-        {
-            [InterpolatedStringHandler]
-            public ref struct DebugLoggerStringHandler
-            {
-                private DefaultInterpolatedStringHandler builder;
-                public DebugLoggerStringHandler(int literalLength, int formattedCount)
-                {
-                    this.builder = new(literalLength, formattedCount);
-                }
-
-                public void AppendLiteral(string value)
-                    => this.builder.AppendLiteral(value);
-                public void AppendFormatted<T>(T t, int alignment = 0, string format = null)
-                    => this.builder.AppendFormatted(t, alignment, format);
-                public void AppendFormatted(DateTime datetime)
-                    => this.builder.AppendFormatted(datetime, format: "u");
-                public void AppendFormatted(bool boolean)
-                    => this.builder.AppendLiteral(boolean ? "TRUE" : "FALSE");
-                public string ToStringAndClear()
-                    => this.builder.ToStringAndClear();
-            }
-
-            public static void Debug(string message)
-            {
-
-            }
-
-            public static void Debug(ref DebugLoggerStringHandler handler)
-            {
-                _ = handler.ToStringAndClear();
-            }
-        }
-
-        const string 보간 = "보간";
-
         [Benchmark]
-        public void 단순문자열()
+        public void Default()
         {
-            Log.Debug("단순문자열");
+            Log.Debug("로그 메시지");
         }
 
         [Benchmark]
-        public void 보간문자열()
+        public void StringIntern()
         {
-            Log.Debug($"{보간}문자열");
+            Log.Debug_2("로그 메시지");
+        }
+    }
+
+    [MemoryDiagnoser]
+    public class SubStringTest
+    {
+        /*
+         * test1
+|        Method |     Mean |     Error |    StdDev |    StdErr |      Min |       Q1 |   Median |       Q3 |      Max |          Op/s |  Gen 0 | Allocated |
+|-------------- |---------:|----------:|----------:|----------:|---------:|---------:|---------:|---------:|---------:|--------------:|-------:|----------:|
+| RangeOperator | 6.419 ns | 0.1212 ns | 0.1699 ns | 0.0327 ns | 6.105 ns | 6.311 ns | 6.413 ns | 6.528 ns | 6.813 ns | 155,790,742.6 | 0.0033 |      56 B |
+|     SubString | 6.551 ns | 0.1484 ns | 0.1709 ns | 0.0382 ns | 6.310 ns | 6.410 ns | 6.547 ns | 6.680 ns | 6.863 ns | 152,659,269.2 | 0.0033 |      56 B |
+         
+         * test2
+         
+         */
+        string sentence = "the quick brown fox";
+
+        [Benchmark]
+        public void RangeOperator()
+        {
+            var sub = sentence[0..^4];
         }
 
         [Benchmark]
-        public void 단순문자열WithInterpolatedStringHandler()
+        public void SubString()
         {
-            Log_2.Debug("단순문자열");
+            var sub = sentence.Substring(0, sentence.Length - 4);
+        }
+    }
+
+    [MemoryDiagnoser]
+    public class ArrayCopyTest
+    {
+        const int size = sizeof(int);
+        const int on = 1;
+        const int keepAliveInterval = 10000;   // Send a packet once every 10 seconds.
+        const int retryInterval = 1000;        // If no response, resend every second.
+
+        [Benchmark]
+        public void ArrayCopy()
+        {
+            byte[] inArray = new byte[size * 3];
+            Array.Copy(BitConverter.GetBytes(on), 0, inArray, 0, size);
+            Array.Copy(BitConverter.GetBytes(keepAliveInterval), 0, inArray, size, size);
+            Array.Copy(BitConverter.GetBytes(retryInterval), 0, inArray, size * 2, size);
         }
 
         [Benchmark]
-        public void 보간문자열WithInterpolatedStringHandler()
+        public void BlockCopy()
         {
-            Log_2.Debug($"{보간}문자열");
+            byte[] inArray = new byte[size * 3];
+            Buffer.BlockCopy(BitConverter.GetBytes(on), 0, inArray, 0, size);
+            Buffer.BlockCopy(BitConverter.GetBytes(keepAliveInterval), 0, inArray, size, size);
+            Buffer.BlockCopy(BitConverter.GetBytes(retryInterval), 0, inArray, size * 2, size);
+        }
+
+        static readonly byte[] onBytes = BitConverter.GetBytes(1);
+        static readonly byte[] keepAliveIntervalBytes = BitConverter.GetBytes(1000);
+        static readonly byte[] retryIntervalBytes = BitConverter.GetBytes(1000);
+
+        [Benchmark]
+        public void ArrayCopyWithStatic()
+        {
+            const int size = sizeof(int);
+            byte[] inArray = new byte[size * 3];
+            Array.Copy(onBytes, 0, inArray, 0, size);
+            Array.Copy(keepAliveIntervalBytes, 0, inArray, size, size);
+            Array.Copy(retryIntervalBytes, 0, inArray, size * 2, size);
+        }
+
+        [Benchmark]
+        public void BlockCopyWithStatic()
+        {
+            const int size = sizeof(int);
+            byte[] inArray = new byte[size * 3];
+            Buffer.BlockCopy(onBytes, 0, inArray, 0, size);
+            Buffer.BlockCopy(keepAliveIntervalBytes, 0, inArray, size, size);
+            Buffer.BlockCopy(retryIntervalBytes, 0, inArray, size * 2, size);
+        }
+    }
+
+    [MemoryDiagnoser]
+    public class NameOfTest
+    {
+        enum ETest
+        {
+            Test,
+        }
+
+        [Benchmark]
+        public void ToString_()
+        {
+            _ = ETest.Test.ToString();
+        }
+
+        [Benchmark]
+        public void NameOf()
+        {
+            _ = nameof(ETest.Test);
+        }
+    }
+
+    [MemoryDiagnoser]
+    public class AddRangeTest
+    {
+        class Data
+        {
+            public int A;
+            public int B;
+        }
+
+        private static List<Data> list = new List<Data>
+        {
+            new Data(),
+            new Data(),
+            new Data(),
+            new Data(),
+        };
+
+        [Benchmark]
+        public void Add()
+        {
+            Add(list);
+        }
+
+        [Benchmark]
+        public void AddRange()
+        {
+            AddRange(list);
+        }
+
+        [Benchmark]
+        public void AddRange2()
+        {
+            AddRange2(list);
+        }
+
+        private void Add(IEnumerable<Data> list)
+        {
+            var l = new List<Data>();
+            foreach(var item in list) l.Add(item);
+        }
+
+        void AddRange(IEnumerable<Data> list)
+        {
+            var l = new List<Data>();
+            l.AddRange(list);
+        }
+
+        void AddRange2(IReadOnlyList<Data> list)
+        {
+            var l = new List<Data>();
+            l.Capacity = list.Count;
+            l.AddRange(list);
         }
     }
 
@@ -345,6 +532,10 @@ namespace LocalFunctionBenchmark
     {
         private static void Main(string[] args)
         {
+            //int moduler = 1;
+            //var list = new List<string>();
+
+            //Console.WriteLine(list[moduler % list.Count]);
 
             //BenchmarkSwitcher.FromAssembly(typeof(DeletgateBenchmark).Assembly).Run(args);
 
@@ -356,7 +547,7 @@ namespace LocalFunctionBenchmark
                 .AddJob(Job.Default.WithRuntime(CoreRuntime.Core60))
                 .AddExporter(DefaultExporters.Markdown);
 
-            BenchmarkRunner.Run<InterpolatedStringHandlerTest>(customConfig);
+            BenchmarkRunner.Run<AddRangeTest>(customConfig);
         }
     }
 }
