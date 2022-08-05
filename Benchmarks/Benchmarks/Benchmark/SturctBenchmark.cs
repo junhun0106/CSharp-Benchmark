@@ -2,22 +2,21 @@
 
 namespace Benchmarks.Benchmark;
 
-[MemoryDiagnoser]
 [Description("struct.Equal 비교")]
-public class EqualBenchmark : IValidate
+public class StructEqualBenchmark : BenchmarkBase, IValidate
 {
     private readonly TestStruct _comparer = new(1, EType.B, new DateTime(2021, 11, 30), "1");
     private readonly TestStruct_NotImpl _comparer_notImpl = new(1, EType.B, new DateTime(2021, 11, 30), "1");
 
     [Benchmark]
-    public void NotImpl()
+    public void Equals_PureStruct()
     {
         var comparer_notImpl = new TestStruct_NotImpl(1, EType.B, new DateTime(2021, 11, 30), "1");
         _ = comparer_notImpl.HasValue();
     }
 
     [Benchmark]
-    public void EquatableImpl()
+    public void Equals_EquatableImplement()
     {
         var comparer = new TestStruct(1, EType.B, new DateTime(2021, 11, 30), "1");
         _ = comparer.HasValue();

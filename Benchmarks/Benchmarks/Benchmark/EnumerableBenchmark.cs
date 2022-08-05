@@ -3,8 +3,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmarks.Benchmark
 {
-    [MemoryDiagnoser]
-    public class EnumerableFirstOrDefault
+    public class EnumerableFirstOrDefault : BenchmarkBase
     {
         public class Container : IEnumerable<Input>
         {
@@ -56,8 +55,7 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
-    public class EnumerableRange
+    public class EnumerableRange : BenchmarkBase
     {
         [Benchmark]
         public void Range()

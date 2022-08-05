@@ -328,8 +328,7 @@ public ref struct ValueStringBuilder
     }
 }
 
-[MemoryDiagnoser]
-public class StringBuilderAppendBenchMark
+public class StringBuilderAppendBenchMark : BenchmarkBase
 {
     private const string testString = "일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십";
 
@@ -386,8 +385,7 @@ public class StringBuilderAppendBenchMark
     }
 }
 
-[MemoryDiagnoser]
-public class StringBuilderAppendWithCapacityBenchMark
+public class StringBuilderAppendWithCapacityBenchMark : BenchmarkBase
 {
     private string testString;
 

@@ -2,8 +2,7 @@
 
 namespace Benchmarks.Benchmark;
 
-[MemoryDiagnoser]
-public class SelectToListBenchmark
+public class SelectToListBenchmark : BenchmarkBase
 {
     private readonly Input[] _list = new Input[] {
         new Input("a"),
@@ -34,8 +33,7 @@ public class SelectToListBenchmark
     }
 }
 
-[MemoryDiagnoser]
-public class WhereToListBenchmark
+public class WhereToListBenchmark : BenchmarkBase
 {
     private readonly Input[] _list = new Input[] {
         new Input("a"),
@@ -66,8 +64,7 @@ public class WhereToListBenchmark
     }
 }
 
-[MemoryDiagnoser]
-public class WhereSelectToListBenchmark
+public class WhereSelectToListBenchmark : BenchmarkBase
 {
     private readonly Input[] _list = new Input[] {
         new Input("a"),

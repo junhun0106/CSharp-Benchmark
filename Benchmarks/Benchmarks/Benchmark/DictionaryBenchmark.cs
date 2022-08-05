@@ -2,8 +2,7 @@
 
 namespace Benchmarks.Benchmark
 {
-    [MemoryDiagnoser]
-    public class DictionryLookUp
+    public class DictionryLookUp : BenchmarkBase
     {
         private readonly Dictionary<string, string> _dic = new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -34,9 +33,8 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
     [Description("Dictionary<TKey> : TKey where struct")]
-    public class DictionaryKeyBenchmark : IValidate
+    public class DictionaryKeyBenchmark : BenchmarkBase, IValidate
     {
         private readonly TestStruct _comparer = new(1, EType.B, new DateTime(2021, 11, 30), "1");
         private readonly Dictionary<TestStruct, string> _dic = new();
@@ -86,8 +84,7 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
-    public class DictionaryWhereBenchmark
+    public class DictionaryWhereBenchmark : BenchmarkBase
     {
         private readonly Dictionary<string, Input> _list = new Dictionary<string, Input>(StringComparer.Ordinal)
         {
@@ -128,8 +125,7 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
-    public class DictionaryElementAt
+    public class DictionaryElementAt : BenchmarkBase
     {
         private readonly Dictionary<string, Input> _list = new Dictionary<string, Input>(StringComparer.Ordinal)
         {
@@ -179,8 +175,7 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
-    public class DictionaryValuesBenchmark
+    public class DictionaryValuesBenchmark : BenchmarkBase
     {
         class Data
         {
@@ -260,8 +255,7 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
-    public class DictionaryStringComparerBenchmark
+    public class DictionaryStringComparerBenchmark : BenchmarkBase
     {
         private readonly Dictionary<string, string> _dictionary1 = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _dictionary2 = new Dictionary<string, string>(StringComparer.Ordinal);

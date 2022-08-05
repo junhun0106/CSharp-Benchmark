@@ -19,7 +19,6 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
     public class ArrayFindAllBenchmark : ArrayBenchmarkBase
     {
         [Benchmark]
@@ -35,7 +34,6 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
     public class XArrayContainsBenchmark : ArrayBenchmarkBase
     {
         private Input _input;

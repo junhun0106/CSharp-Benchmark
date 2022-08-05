@@ -2,25 +2,9 @@
 
 namespace Benchmarks.Benchmark
 {
-    [MemoryDiagnoser]
-    public class ListFindBenchmark
+    [Description("List<T>.First vs List<T>.Find")]
+    public class ListFindBenchmark : ListBenchmarkBase
     {
-        private readonly List<string> _list = new List<string> {
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-        };
-
         [Benchmark]
         public void FirstOrDefault()
         {
@@ -34,25 +18,8 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
-    public class ListAnyBenchmark
+    public class ListAnyBenchmark : ListBenchmarkBase
     {
-        private readonly List<string> _list = new List<string> {
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-        };
-
         [Benchmark]
         public void Any()
         {
@@ -66,25 +33,8 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
-    public class ListFindNullVsAnyBenchmark
+    public class ListFindNullVsAnyBenchmark : ListBenchmarkBase
     {
-        private readonly List<string> _list = new List<string> {
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-        };
-
         [Benchmark]
         public void FindNull()
         {
@@ -98,25 +48,8 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
-    public class ListLast
+    public class List_Last : ListBenchmarkBase
     {
-        private readonly List<string> _list = new List<string> {
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-        };
-
         [Benchmark]
         public void LastOrDefault()
         {
@@ -133,25 +66,8 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
-    public class ListIndex0
+    public class List_First : ListBenchmarkBase
     {
-        private readonly List<string> _list = new List<string> {
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-        };
-
         [Benchmark]
         public void FirstOrDefault()
         {
@@ -168,31 +84,13 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    [MemoryDiagnoser]
-    public class LinqContains
+    public class LinqContains : ListBenchmarkBase
     {
-        private readonly string[] _list = new string[] {
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "a",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-            "b",
-        };
-
         [Benchmark]
         public void Contains_Linq()
         {
             if (_list.Contains("a"))
             {
-
             }
         }
 
@@ -201,7 +99,6 @@ namespace Benchmarks.Benchmark
         {
             if (_list.Contains("a", StringComparer.Ordinal))
             {
-
             }
         }
 
@@ -210,7 +107,6 @@ namespace Benchmarks.Benchmark
         {
             if (_list.CustomContains("a"))
             {
-
             }
         }
     }
