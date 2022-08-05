@@ -1,10 +1,8 @@
-﻿using System;
-using System.Linq;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 
-namespace Benchmarks.Benchmark
-{
-    public class ArrayFindBenchmark : ArrayBenchmarkBase
+namespace Benchmarks.Benchmark;
+
+public class ArrayFindBenchmark : ArrayBenchmarkBase
     {
         [Benchmark]
         public void ArrayFind()
@@ -19,7 +17,7 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    public class ArrayFindAllBenchmark : ArrayBenchmarkBase
+public class ArrayFindAllBenchmark : ArrayBenchmarkBase
     {
         [Benchmark]
         public void ArrayFindAll()
@@ -34,7 +32,7 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    public class XArrayContainsBenchmark : ArrayBenchmarkBase
+public class XArrayContainsBenchmark : ArrayBenchmarkBase
     {
         private Input _input;
 
@@ -127,5 +125,54 @@ namespace Benchmarks.Benchmark
         //        throw new Exception();
         //    }
         //}
+    }
+
+public class ArrayCopyBenchmark : BenchmarkBase
+{
+    const int size = sizeof(int);
+    const int on = 1;
+    const int keepAliveInterval = 10000;   // Send a packet once every 10 seconds.
+    const int retryInterval = 1000;        // If no response, resend every second.
+
+    [Benchmark]
+    public void ArrayCopy()
+    {
+        byte[] inArray = new byte[size * 3];
+        Array.Copy(BitConverter.GetBytes(on), 0, inArray, 0, size);
+        Array.Copy(BitConverter.GetBytes(keepAliveInterval), 0, inArray, size, size);
+        Array.Copy(BitConverter.GetBytes(retryInterval), 0, inArray, size * 2, size);
+    }
+
+    [Benchmark]
+    public void BlockCopy()
+    {
+        byte[] inArray = new byte[size * 3];
+        Buffer.BlockCopy(BitConverter.GetBytes(on), 0, inArray, 0, size);
+        Buffer.BlockCopy(BitConverter.GetBytes(keepAliveInterval), 0, inArray, size, size);
+        Buffer.BlockCopy(BitConverter.GetBytes(retryInterval), 0, inArray, size * 2, size);
+    }
+
+    static readonly byte[] onBytes = BitConverter.GetBytes(1);
+    static readonly byte[] keepAliveIntervalBytes = BitConverter.GetBytes(1000);
+    static readonly byte[] retryIntervalBytes = BitConverter.GetBytes(1000);
+
+    [Benchmark]
+    public void ArrayCopyWithStatic()
+    {
+        const int size = sizeof(int);
+        byte[] inArray = new byte[size * 3];
+        Array.Copy(onBytes, 0, inArray, 0, size);
+        Array.Copy(keepAliveIntervalBytes, 0, inArray, size, size);
+        Array.Copy(retryIntervalBytes, 0, inArray, size * 2, size);
+    }
+
+    [Benchmark]
+    public void BlockCopyWithStatic()
+    {
+        const int size = sizeof(int);
+        byte[] inArray = new byte[size * 3];
+        Buffer.BlockCopy(onBytes, 0, inArray, 0, size);
+        Buffer.BlockCopy(keepAliveIntervalBytes, 0, inArray, size, size);
+        Buffer.BlockCopy(retryIntervalBytes, 0, inArray, size * 2, size);
     }
 }

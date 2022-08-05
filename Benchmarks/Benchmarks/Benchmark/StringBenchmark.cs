@@ -9,6 +9,135 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace Benchmarks.Benchmark;
 
+public class StringInternBenchmark : BenchmarkBase
+{
+    public static class Log
+    {
+        public static string Debug(string message, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int lineNumber = -1)
+        {
+            var mn = memberName;
+            var sf = sourceFilePath;
+
+            return String.Empty;
+        }
+
+        public static string Debug_2(string message)
+        {
+            return String.Empty;
+        }
+    }
+
+    [Benchmark]
+    public void Default()
+    {
+        Log.Debug("로그 메시지");
+    }
+
+    [Benchmark]
+    public void StringIntern()
+    {
+        Log.Debug_2("로그 메시지");
+    }
+}
+
+public class StringSubStringBenchmark : BenchmarkBase
+{
+    /*
+     * test1
+|        Method |     Mean |     Error |    StdDev |    StdErr |      Min |       Q1 |   Median |       Q3 |      Max |          Op/s |  Gen 0 | Allocated |
+|-------------- |---------:|----------:|----------:|----------:|---------:|---------:|---------:|---------:|---------:|--------------:|-------:|----------:|
+| RangeOperator | 6.419 ns | 0.1212 ns | 0.1699 ns | 0.0327 ns | 6.105 ns | 6.311 ns | 6.413 ns | 6.528 ns | 6.813 ns | 155,790,742.6 | 0.0033 |      56 B |
+|     SubString | 6.551 ns | 0.1484 ns | 0.1709 ns | 0.0382 ns | 6.310 ns | 6.410 ns | 6.547 ns | 6.680 ns | 6.863 ns | 152,659,269.2 | 0.0033 |      56 B |
+
+     * test2
+
+     */
+    string sentence = "the quick brown fox";
+
+    [Benchmark]
+    public void RangeOperator()
+    {
+        var sub = sentence[0..^4];
+    }
+
+    [Benchmark]
+    public void SubString()
+    {
+        var sub = sentence.Substring(0, sentence.Length - 4);
+    }
+}
+
+public class InterpolatedStringHandlerTest : BenchmarkBase
+{
+    //public static class Log
+    //{
+    //    public static void Debug(string message)
+    //    {
+
+    //    }
+    //}
+
+    //public static class Log_2
+    //{
+    //    //[InterpolatedStringHandler]
+    //    public ref struct DebugLoggerStringHandler
+    //    {
+    //        private DefaultInterpolatedStringHandler builder;
+    //        public DebugLoggerStringHandler(int literalLength, int formattedCount)
+    //        {
+    //            this.builder = new(literalLength, formattedCount);
+    //        }
+
+    //        public void AppendLiteral(string value)
+    //            => this.builder.AppendLiteral(value);
+    //        public void AppendFormatted<T>(T t, int alignment = 0, string format = null)
+    //            => this.builder.AppendFormatted(t, alignment, format);
+    //        public void AppendFormatted(DateTime datetime)
+    //            => this.builder.AppendFormatted(datetime, format: "u");
+    //        public void AppendFormatted(bool boolean)
+    //            => this.builder.AppendLiteral(boolean ? "TRUE" : "FALSE");
+    //        public string ToStringAndClear()
+    //            => this.builder.ToStringAndClear();
+    //    }
+
+    //    public static void Debug(string message)
+    //    {
+
+    //    }
+
+    //    public static void Debug(ref DebugLoggerStringHandler handler)
+    //    {
+    //        _ = handler.ToStringAndClear();
+    //    }
+    //}
+
+    //const string 보간 = "보간";
+
+    //[Benchmark]
+    //public void 단순문자열()
+    //{
+    //    Log.Debug("단순문자열");
+    //}
+
+    //[Benchmark]
+    //public void 보간문자열()
+    //{
+    //    Log.Debug($"{보간}문자열");
+    //}
+
+    //[Benchmark]
+    //public void 단순문자열WithInterpolatedStringHandler()
+    //{
+    //    Log_2.Debug("단순문자열");
+    //}
+
+    //[Benchmark]
+    //public void 보간문자열WithInterpolatedStringHandler()
+    //{
+    //    Log_2.Debug($"{보간}문자열");
+    //}
+}
+
 public static class StringBuilderPool
 {
     private static readonly ObjectPool<StringBuilder> _shared = new DefaultObjectPoolProvider().CreateStringBuilderPool();

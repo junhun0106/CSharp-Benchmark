@@ -48,7 +48,7 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    public class List_Last : ListBenchmarkBase
+    public class ListLastBenchmark : ListBenchmarkBase
     {
         [Benchmark]
         public void LastOrDefault()
@@ -66,7 +66,7 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    public class List_First : ListBenchmarkBase
+    public class ListFirstBenchmark : ListBenchmarkBase
     {
         [Benchmark]
         public void FirstOrDefault()
@@ -84,7 +84,7 @@ namespace Benchmarks.Benchmark
         }
     }
 
-    public class LinqContains : ListBenchmarkBase
+    public class ListContainsBenchmark : ListBenchmarkBase
     {
         [Benchmark]
         public void Contains_Linq()
@@ -110,4 +110,59 @@ namespace Benchmarks.Benchmark
             }
         }
     }
+
+    public class ListAddRangeBenchmark : BenchmarkBase
+    {
+        class Data
+        {
+            public int A;
+            public int B;
+        }
+
+        private static List<Data> list = new List<Data>
+        {
+            new Data(),
+            new Data(),
+            new Data(),
+            new Data(),
+        };
+
+        [Benchmark]
+        public void Add()
+        {
+            Add(list);
+        }
+
+        [Benchmark]
+        public void AddRange()
+        {
+            AddRange(list);
+        }
+
+        [Benchmark]
+        public void AddRange2()
+        {
+            AddRange2(list);
+        }
+
+        private void Add(IEnumerable<Data> list)
+        {
+            var l = new List<Data>();
+            foreach (var item in list) l.Add(item);
+        }
+
+        void AddRange(IEnumerable<Data> list)
+        {
+            var l = new List<Data>();
+            l.AddRange(list);
+        }
+
+        void AddRange2(IReadOnlyList<Data> list)
+        {
+            var l = new List<Data>();
+            l.Capacity = list.Count;
+            l.AddRange(list);
+        }
+    }
+
 }
