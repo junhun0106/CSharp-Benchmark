@@ -3,11 +3,42 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Xml.Linq;
 using BenchmarkDotNet.Attributes;
 using Cysharp.Text;
 using Microsoft.Extensions.ObjectPool;
 
 namespace Benchmarks.Benchmark;
+
+public class StringReplaceBenchmark : BenchmarkBase
+{
+    static List<string> list = new List<string> { "?" };
+
+    [Benchmark]
+    public void Replace()
+    {
+        string name = "A?r?u";
+
+        foreach(var l in list)
+        {
+            name = name.Replace(l, "");
+        }
+    }
+
+    [Benchmark]
+    public void ReplaceWithContains()
+    {
+        string name = "A?r?u";
+
+        foreach (var l in list)
+        {
+            if (name.Contains(l))
+            {
+                name = name.Replace(l, "");
+            }
+        }
+    }
+}
 
 public class StringInternBenchmark : BenchmarkBase
 {
