@@ -3,7 +3,7 @@ using BenchmarkDotNet.Jobs;
 
 namespace Benchmarks
 {
-    [SimpleJob(RuntimeMoniker.Net60)]
+    [SimpleJob(RuntimeMoniker.Net70)]
     [MemoryDiagnoser]
     public class BenchmarkBase
     {
