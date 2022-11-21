@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Collections.Concurrent;
+using BenchmarkDotNet.Attributes;
 
 namespace Benchmarks.Benchmark
 {
@@ -283,6 +284,70 @@ namespace Benchmarks.Benchmark
         {
             for (int i = 0; i < 100; ++i)
                 _dictionary2.TryGetValue("100", out var _);
+        }
+    }
+
+    public class ConcurrentDictionaryEmptyBenchmark : BenchmarkBase
+    {
+        private static ConcurrentDictionary<string, string> dic = new();
+
+        [Benchmark]
+        public void IsEmpty()
+        {
+            if (dic.IsEmpty)
+            {
+
+            }
+        }
+
+        [Benchmark]
+        public void Count()
+        {
+            if (dic.Count <= 0)
+            {
+
+            }
+        }
+    }
+
+    public class ConcurrentDictionaryNotEmptyBenchmark : BenchmarkBase
+    {
+        private static ConcurrentDictionary<string, string> dic = new()
+        {
+            ["a"] = "a",
+            ["b"] = "b",
+            ["c"] = "b",
+            ["d"] = "b",
+            ["e"] = "b",
+            ["f"] = "b",
+            ["g"] = "b",
+            ["1"] = "b",
+            ["2"] = "b",
+            ["3"] = "b",
+            ["4"] = "b",
+            ["5"] = "b",
+            ["6"] = "b",
+            ["7"] = "b",
+            ["8"] = "b",
+            ["9"] = "b",
+        };
+
+        [Benchmark]
+        public void IsEmpty()
+        {
+            if (dic.IsEmpty)
+            {
+
+            }
+        }
+
+        [Benchmark]
+        public void Count()
+        {
+            if (dic.Count <= 0)
+            {
+
+            }
         }
     }
 }
