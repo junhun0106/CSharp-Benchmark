@@ -1,38 +1,39 @@
 ﻿using BenchmarkDotNet.Attributes;
 
+// Wiki - https://github.com/junhun0106/CSharp/wiki/%5BBenchmark%5D-Array
 namespace Benchmarks.Benchmark;
 
 public class ArrayFindBenchmark : ArrayBenchmarkBase
+{
+    [Benchmark]
+    public void ArrayFind()
     {
-        [Benchmark]
-        public void ArrayFind()
-        {
-            var _ = _list.Find(x => x.Value == "a");
-        }
-
-        [Benchmark]
-        public void FirstOrDefault()
-        {
-            var _ = _list.FirstOrDefault(x => x.Value == "a");
-        }
+        var _ = _list.Find(x => x.Value == "a");
     }
+
+    [Benchmark]
+    public void FirstOrDefault()
+    {
+        var _ = _list.FirstOrDefault(x => x.Value == "a");
+    }
+}
 
 public class ArrayFindAllBenchmark : ArrayBenchmarkBase
+{
+    [Benchmark]
+    public void ArrayFindAll()
     {
-        [Benchmark]
-        public void ArrayFindAll()
-        {
-            var a = _list.FindAll(x => x.Value == "a");
-        }
-
-        [Benchmark]
-        public void Where()
-        {
-            var a = _list.Where(x => x.Value == "a");
-        }
+        var a = _list.FindAll(x => x.Value == "a");
     }
 
-public class XArrayContainsBenchmark : ArrayBenchmarkBase
+    [Benchmark]
+    public void Where()
+    {
+        var a = _list.Where(x => x.Value == "a");
+    }
+}
+
+public class ArrayContainsBenchmark : ArrayBenchmarkBase
     {
         private Input _input;
 
