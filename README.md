@@ -25,10 +25,13 @@
 * [Wiki](https://github.com/junhun0106/CSharp/wiki/%5BBenchmark%5D-Dictionary)
 * Dictionry.ContainsKey + Dictionry[key] vs Dictionry.TryGetValue
   * .NET 7 Pref Analisys : [CA1836](https://learn.microsoft.com/ko-kr/dotnet/fundamentals/code-analysis/quality-rules/ca1836) 
+* Dictionary.TryGetValue in string key, default vs StringComparer.Ordinal
 * Dictionary.TryGetValue in struct(with IEquatable) key, without IEqualityComparer vs with IEqualityComparer
 * Dictionary find value.field foreach vs Dictionary.where
 * Dictionary ElementAt vs ElementAtOrDefault vs First vs FirstOrDefault vs Foreach(1 loop break)
 * Dictionary foreach all value vs foreach .Values
+
+* [ConcurrentDictionary](https://github.com/junhun0106/CSharp/wiki/%5BBenchmark%5D-ConcurrentDictionary)
 
 #### [Enum]
 
