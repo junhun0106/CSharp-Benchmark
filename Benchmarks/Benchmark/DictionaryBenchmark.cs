@@ -1,4 +1,6 @@
 ﻿using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using BenchmarkDotNet.Attributes;
 
 // Wiki - https://github.com/junhun0106/CSharp/wiki/%5BBenchmark%5D-Dictionary
@@ -246,6 +248,75 @@ namespace Benchmarks.Benchmark
         {
             foreach (var kv in _dictionary)
             {
+            }
+        }
+    }
+
+    public class DictionaryGetOrCreateBenchmark : BenchmarkBase
+    {
+        readonly Dictionary<int, object> _map = new();
+        static int count;
+
+        [Benchmark]
+        public void TryGetValueOrAdd()
+        {
+            Interlocked.Increment(ref count);
+            if (!_map.TryGetValue(count, out _))
+            {
+                _map.Add(count, new());
+            }
+        }
+
+        [Benchmark]
+        public void GetValueRefOrAddDefault()
+        {
+            Interlocked.Increment(ref count);
+            ref var val = ref CollectionsMarshal.GetValueRefOrAddDefault(_map, count, out var exists);
+            if (!exists)
+            {
+                val = new();
+            }
+        }
+    }
+
+    public class DictionaryTryGetBenchmark : BenchmarkBase
+    {
+        readonly Dictionary<int, int> _map = new();
+
+        static int count = 100;
+
+        [GlobalSetup]
+        public void GlobalSetup()
+        {
+            for (int i = 0; i < count; ++i)
+            {
+                _map[i] = i;
+            }
+        }
+
+        [Benchmark]
+        public void TryGetValue()
+        {
+            if(_map.TryGetValue(1, out var val))
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+
+        [Benchmark]
+        public void GetValueRefOrNullRef()
+        {
+            if (_map.TryGetValueRef(1, out var val))
+            {
+
+            }
+            else
+            {
+
             }
         }
     }

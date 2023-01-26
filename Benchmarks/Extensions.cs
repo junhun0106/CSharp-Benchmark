@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Benchmarks;
 
@@ -76,6 +77,26 @@ public static class DicionaryExtensions
         }
 
         return default(KeyValuePair<TKey, TValue>);
+    }
+
+    public static TValue GetOrCreate<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Func<TValue> createFactory)
+    where TKey : notnull
+    {
+        ref TValue val = ref CollectionsMarshal.GetValueRefOrAddDefault(dictionary, key, out var exists);
+        if (!exists)
+        {
+            val = createFactory();
+        }
+
+        return val;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool TryGetValueRef<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, out TValue value)
+    {
+        ref TValue val = ref CollectionsMarshal.GetValueRefOrNullRef(dictionary, key);
+        value = val;
+        return !Unsafe.IsNullRef(ref val);
     }
 }
 

@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
+using BenchmarkDotNet.Disassemblers;
 using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
