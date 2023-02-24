@@ -1,21 +1,39 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using BenchmarkDotNet.Attributes;
 
-namespace Benchmarks.Benchmark
+namespace Benchmarks.Benchmark.Task
 {
-    public class TaskBenchmark : BenchmarkBase
+    public class TaskBenchmark_WhenAllVsForEachAsync : BenchmarkBase
     {
-        const int count = 10000;
+        const int count = 10;
         static readonly string[] names = new string[count];
         static readonly ParallelOptions options = new ParallelOptions
         {
             MaxDegreeOfParallelism = Environment.ProcessorCount * 2,
         };
+        static HttpClient httpClient;
+        static SemaphoreSlim semaphoreSlim;
 
         [GlobalSetup]
         public void Setup()
         {
+            semaphoreSlim = new SemaphoreSlim(count);
+
+            var handler = new HttpClientHandler
+            {
+                MaxConnectionsPerServer = count,
+            };
+
+            httpClient = new HttpClient(handler)
+            {
+                BaseAddress = new("https://www.google.com")
+            };
+            httpClient.DefaultRequestHeaders.Connection.Clear();
+            httpClient.DefaultRequestHeaders.Connection.Add("Keep-Alive");
+            httpClient.DefaultRequestHeaders.ConnectionClose = false;
+
             for (int i = 0; i < count; i++)
             {
                 names[i] = $"{i}.txt";
@@ -46,15 +64,17 @@ namespace Benchmarks.Benchmark
              */
             try
             {
-                using var httpClient = new HttpClient();
-                httpClient.BaseAddress = new("https://www.google.com");
+                await semaphoreSlim.WaitAsync();
                 var response = await httpClient.GetAsync("").ConfigureAwait(false);
-
                 //Console.WriteLine($"[{caller} | {name} | {Environment.CurrentManagedThreadId}] {response.StatusCode}");
             }
             catch
             {
                 // ignore
+            }
+            finally
+            {
+                semaphoreSlim.Release();
             }
         }
 
@@ -65,8 +85,8 @@ namespace Benchmarks.Benchmark
             for (int i = 0; i < count; ++i)
             {
                 var name = names[i];
-                //tasks[i] = ReadHttpAsync(nameof(TaskArray), name);
-                tasks[i] = WriteFileAsync(name, name);
+                tasks[i] = ReadHttpAsync(nameof(TaskArray), name);
+                //tasks[i] = WriteFileAsync(name, name);
             }
 
             await Task.WhenAll(tasks);
@@ -77,8 +97,8 @@ namespace Benchmarks.Benchmark
         {
             await Parallel.ForEachAsync(names, options, async (name, _) =>
             {
-                //await ReadHttpAsync(nameof(ParallelForeachAsync), name);
-                await WriteFileAsync(name, name);
+                await ReadHttpAsync(nameof(ParallelForeachAsync), name);
+                //await WriteFileAsync(name, name);
             });
         }
     }
